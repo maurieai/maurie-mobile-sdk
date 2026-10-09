@@ -60,7 +60,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
-      - run: gradle --no-daemon :maurie-chat:testDebugUnitTest :maurie-chat:assembleRelease
+      - run: gradle --no-daemon :maurie-chat:testDebugUnitTest :maurie-chat:assembleRelease :example:assembleDebug
+      # The test app, to install on a phone: Actions ▸ the run ▸ Artifacts ▸ maurie-sdk-test-apk.
+      - name: Test app (APK)
+        uses: actions/upload-artifact@v4
+        with:
+          name: maurie-sdk-test-apk
+          path: android/example/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
       - name: Unit test report
         if: always()
         uses: actions/upload-artifact@v4
