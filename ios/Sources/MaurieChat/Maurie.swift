@@ -106,29 +106,36 @@ final class MaurieWebHost: NSObject, MaurieHostHooks, WKNavigationDelegate, WKUI
         return w
     }
 
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if let s = message.body as? String { core?.handlePageMessage(s) }
+    // WebKit's delegate protocols aren't main-actor isolated, but WebKit calls them on the main thread:
+    // nonisolated methods that hop onto the main actor (only Sendable values cross).
+
+    nonisolated func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let s = message.body as? String else { return }
+        MainActor.assumeIsolated { core?.handlePageMessage(s) }
     }
 
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        core?.pageLoadStarted()
+    nonisolated func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        MainActor.assumeIsolated { core?.pageLoadStarted() }
     }
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
-                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    nonisolated func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+                             decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         let url = navigationAction.request.url?.absoluteString ?? ""
-        if navigationAction.targetFrame?.isMainFrame == true, url != "about:blank", core?.isChatURL(url) != true {
+        let isMain = navigationAction.targetFrame?.isMainFrame == true
+        let leave = MainActor.assumeIsolated { () -> Bool in
+            guard isMain, url != "about:blank", core?.isChatURL(url) != true else { return false }
             openURL(url)
-            decisionHandler(.cancel)
-            return
+            return true
         }
-        decisionHandler(.allow)
+        decisionHandler(leave ? .cancel : .allow)
     }
 
     // target=_blank links: the phone's browser, never a second WebView.
-    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
-                 for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if let u = navigationAction.request.url?.absoluteString { openURL(u) }
+    nonisolated func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+                             for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if let u = navigationAction.request.url?.absoluteString {
+            MainActor.assumeIsolated { openURL(u) }
+        }
         return nil
     }
 
@@ -142,7 +149,6 @@ final class MaurieWebHost: NSObject, MaurieHostHooks, WKNavigationDelegate, WKUI
 }
 
 /// WKUserContentController keeps its handlers strongly; this breaks the cycle with the host.
-@MainActor
 private final class WeakMessageHandler: NSObject, WKScriptMessageHandler {
     weak var target: WKScriptMessageHandler?
     init(_ target: WKScriptMessageHandler) { self.target = target }

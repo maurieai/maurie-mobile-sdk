@@ -84,5 +84,9 @@ jobs:
         run: |
           SIM=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+[^(]*' | sed 's/ *$//')
           echo "Simulator: $SIM"
-          # -quiet: only warnings, errors (with file:line) and the test results.
-          xcodebuild test -quiet -scheme MaurieChat -destination "platform=iOS Simulator,name=$SIM"
+          # The full log is long: show only errors / warnings (with file:line) and each test's result.
+          set +e
+          xcodebuild test -scheme MaurieChat -destination "platform=iOS Simulator,name=$SIM" > xcodebuild.log 2>&1
+          STATUS=$?
+          grep -E "error:|warning:|Test Case .*(passed|failed)|Executed [0-9]+ test|\*\* TEST" xcodebuild.log | grep -v "^ld: warning" | sort -u
+          exit $STATUS
