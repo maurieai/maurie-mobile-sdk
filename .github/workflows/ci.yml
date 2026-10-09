@@ -1,0 +1,88 @@
+# Build and test the four SDKs on GitHub's machines (no local Xcode / Android Studio / Flutter needed).
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  react-native:
+    name: React Native
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-native
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-native/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+
+  flutter:
+    name: Flutter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test
+
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      # No Gradle wrapper in the repo yet: use a fixed Gradle that fits Android Gradle Plugin 8.5.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - run: gradle --no-daemon :maurie-chat:testDebugUnitTest :maurie-chat:assembleRelease
+      - name: Unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-report
+          path: android/maurie-chat/build/reports/tests/
+          if-no-files-found: ignore
+
+  ios:
+    name: iOS
+    runs-on: macos-14
+    defaults:
+      run:
+        working-directory: ios
+    steps:
+      - uses: actions/checkout@v4
+      - run: xcodebuild -version
+      - name: Schemes
+        run: xcodebuild -list
+      - name: Build and test on an iPhone simulator
+        run: |
+          SIM=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+[^(]*' | sed 's/ *$//')
+          echo "Simulator: $SIM"
+          xcodebuild test -scheme MaurieChat -destination "platform=iOS Simulator,name=$SIM" | tail -n 80
+          exit ${PIPESTATUS[0]}
