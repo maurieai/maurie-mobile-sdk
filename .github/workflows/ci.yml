@@ -84,5 +84,5 @@ jobs:
         run: |
           SIM=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+[^(]*' | sed 's/ *$//')
           echo "Simulator: $SIM"
-          xcodebuild test -scheme MaurieChat -destination "platform=iOS Simulator,name=$SIM" | tail -n 80
-          exit ${PIPESTATUS[0]}
+          # -quiet: only warnings, errors (with file:line) and the test results.
+          xcodebuild test -quiet -scheme MaurieChat -destination "platform=iOS Simulator,name=$SIM"

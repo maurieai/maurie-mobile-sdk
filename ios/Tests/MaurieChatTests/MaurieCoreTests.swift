@@ -25,7 +25,7 @@ final class MaurieCoreTests: XCTestCase {
     }
     private func events(_ c: MaurieCore) -> () -> [String] {
         var got: [String] = []
-        for e in MaurieEvent.allCases { c.on(e) { err in got.append(err.map { "\(e.rawValue):\($0.code)" } ?? e.rawValue) } }
+        for e in MaurieEvent.allCases { _ = c.on(e) { err in got.append(err.map { "\(e.rawValue):\($0.code)" } ?? e.rawValue) } }
         return { got }
     }
 
