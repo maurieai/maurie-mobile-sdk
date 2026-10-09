@@ -1,2 +1,4 @@
 node_modules/
-lib/
+react-native/lib/
+.dart_tool/
+build/
