@@ -5,6 +5,8 @@ name: Release
 on:
   push:
     tags: ['[0-9]+.[0-9]+.[0-9]+']
+  # By hand: publishes the React Native package only (e.g. once the NPM_TOKEN secret has been added after a tag).
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,6 +14,7 @@ permissions:
 jobs:
   android:
     name: Android library
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -48,6 +51,7 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
       - name: The tag must be the package's version
+        if: github.event_name == 'push'
         run: test "$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
       - run: npm ci
       - run: npm test
