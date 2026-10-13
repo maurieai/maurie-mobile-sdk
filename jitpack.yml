@@ -1,0 +1,9 @@
+# https://jitpack.io builds the Android SDK from a tag of this repository, so an app can depend on it without it being
+# on Maven Central. The Android project is in android/ and has no Gradle wrapper, hence the explicit commands.
+jdk:
+  - openjdk17
+before_install:
+  - sdk install gradle 8.9 || true
+  - sdk use gradle 8.9 || true
+install:
+  - cd android && gradle --no-daemon :maurie-chat:publishReleasePublicationToMavenLocal

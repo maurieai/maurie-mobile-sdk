@@ -5,7 +5,7 @@ The Maurie AI chat in your iPhone app. Requires the Maurie **Pro** plan and a mo
 
 ## Install
 
-Xcode ▸ File ▸ Add Package Dependencies… ▸ the MaurieChat package URL ▸ add **MaurieChat** to your app.
+Xcode ▸ File ▸ Add Package Dependencies… ▸ `https://github.com/maurieai/maurie-mobile-sdk` ▸ add **MaurieChat** to your app.
 
 If visitors may attach photos, add `NSCameraUsageDescription` to your app's Info.plist (iOS asks before the camera opens).
 

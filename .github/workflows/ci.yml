@@ -97,3 +97,13 @@ jobs:
           STATUS=$?
           grep -E "error:|warning:|Test Case .*(passed|failed)|Executed [0-9]+ test|\*\* TEST" xcodebuild.log | grep -v "^ld: warning" | sort -u
           exit $STATUS
+      # An app installs the package from the repository's ROOT manifest — build that one too.
+      - name: Build the package from the root manifest
+        working-directory: .
+        run: |
+          SIM=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+[^(]*' | sed 's/ *$//')
+          set +e
+          xcodebuild build -scheme MaurieChat -destination "platform=iOS Simulator,name=$SIM" > root.log 2>&1
+          STATUS=$?
+          grep -E "error:|\*\* BUILD" root.log | sort -u
+          exit $STATUS

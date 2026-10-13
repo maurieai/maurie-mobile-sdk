@@ -7,6 +7,7 @@
   "files": ["lib", "src", "README.md"],
   "license": "MIT",
   "homepage": "https://maurieai.com",
+  "repository": { "type": "git", "url": "git+https://github.com/maurieai/maurie-mobile-sdk.git", "directory": "react-native" },
   "keywords": ["maurie", "chat", "react-native", "expo", "ai", "support"],
   "scripts": {
     "build": "tsc -p tsconfig.json",

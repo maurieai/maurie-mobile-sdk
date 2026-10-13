@@ -1,6 +1,5 @@
 // The Maurie SDK's logic without Android views — testable on the JVM (src/test). Same behaviour as
 // react-native/src/core.ts, flutter/lib/src/core.dart and ios/Sources/MaurieChat/MaurieCore.swift; keep them in step.
-// Design: https://claude.ai/code/artifact/a3fb0603-13a4-4dec-bdf1-05b27c65e9ff
 package com.maurieai.chat
 
 import org.json.JSONObject

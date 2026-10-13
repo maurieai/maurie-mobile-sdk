@@ -5,8 +5,14 @@ The Maurie AI chat in your Flutter app. Requires the Maurie **Pro** plan and a m
 
 ## Install
 
-```bash
-flutter pub add maurie_chat
+```yaml
+# pubspec.yaml
+dependencies:
+  maurie_chat:
+    git:
+      url: https://github.com/maurieai/maurie-mobile-sdk.git
+      path: flutter
+      ref: 0.1.0
 ```
 
 ## Use
