@@ -1,4 +1,4 @@
-# com.maurieai:chat (Android)
+# Maurie chat (Android)
 
 The Maurie AI chat in your Android app. Requires the Maurie **Pro** plan and a mobile key from
 **Maurie ▸ Agents ▸ Deploy ▸ Mobile app ▸ Mobile SDK**. Android 7.0 (API 24)+.
@@ -6,9 +6,14 @@ The Maurie AI chat in your Android app. Requires the Maurie **Pro** plan and a m
 ## Install
 
 ```kotlin
-// build.gradle.kts
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositories { google(); mavenCentral(); maven("https://jitpack.io") }
+}
+
+// build.gradle.kts (app)
 dependencies {
-    implementation("com.maurieai:chat:0.1.0")
+    implementation("com.github.maurieai:maurie-mobile-sdk:0.1.0")
 }
 ```
 

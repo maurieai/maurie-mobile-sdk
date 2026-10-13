@@ -1,6 +1,5 @@
 // The Maurie SDK's logic without UIKit — testable on its own (Tests/MaurieChatTests).
 // Same behaviour as react-native/src/core.ts and flutter/lib/src/core.dart; keep them in step.
-// Design: https://claude.ai/code/artifact/a3fb0603-13a4-4dec-bdf1-05b27c65e9ff
 import Foundation
 
 public let maurieDefaultBackend = "https://api.maurieai.com"

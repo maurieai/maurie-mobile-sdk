@@ -2,7 +2,7 @@
  * The Maurie SDK's logic, without React Native — so it can be tested in Node (test/core.test.mjs).
  * index.tsx wires it to a WebView (MaurieHost) and to Linking.
  *
- * How it works (design: https://claude.ai/code/artifact/a3fb0603-13a4-4dec-bdf1-05b27c65e9ff):
+ * How it works:
  *  1. setup(key) asks the server which agent the key belongs to (GET /api/mobile/verify).
  *  2. The host keeps ONE WebView with the agent's chat page alive, hidden, so the conversation survives
  *     closing and reopening the chat. show() / hide() only change whether it's on screen.

@@ -1,6 +1,5 @@
 // The Maurie SDK's logic without Flutter widgets — testable on its own (test/core_test.dart).
 // Same behaviour as the React Native SDK's core.ts; keep the two in step.
-// Design: https://claude.ai/code/artifact/a3fb0603-13a4-4dec-bdf1-05b27c65e9ff
 import 'dart:convert';
 
 const String defaultBackend = 'https://api.maurieai.com';
